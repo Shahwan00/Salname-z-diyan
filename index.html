@@ -1,0 +1,72 @@
+Enter<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Navigation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="navigation">
+        <ul>
+
+            <li class="active">
+                <a href="#">
+                    <span class="icon">⌂</span>
+                    <span class="text">Home</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="icon">♙</span>
+                    <span class="text">Profile</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="icon">◯</span>
+                    <span class="text">Chat</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="icon">▣</span>
+                    <span class="text">Camera</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="icon">⚙</span>
+                    <span class="text">Settings</span>
+                </a>
+            </li>
+
+            <div class="indicator"></div>
+
+        </ul>
+    </div>
+
+    <script>
+        const list = document.querySelectorAll(".navigation li");
+
+        function activeLink() {
+            list.forEach(item => {
+                item.classList.remove("active");
+            });
+
+            this.classList.add("active");
+        }
+
+        list.forEach(item => {
+            item.addEventListener("click", activeLink);
+        });
+    </script>
+
+</body>
+</html>
