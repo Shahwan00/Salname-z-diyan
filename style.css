@@ -1,0 +1,181 @@
+Enter* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: #1d1e22;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+.navigation {
+    position: relative;
+    width: 650px;
+    height: 115px;
+    background: #fff;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navigation ul {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 30px;
+}
+
+.navigation ul li {
+    position: relative;
+    list-style: none;
+    width: 100px;
+    height: 100%;
+    z-index: 2;
+}
+
+.navigation ul li a {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: #222;
+    flex-direction: column;
+}
+
+.navigation ul li .icon {
+    font-size: 35px;
+    line-height: 1;
+    transition: 0.5s;
+}
+
+.navigation ul li .text {
+    position: absolute;
+    top: 73px;
+    font-size: 15px;
+    font-weight: bold;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 0.5s;
+}
+
+.navigation ul li.active .icon {
+    transform: translateY(-34px);
+}
+
+.navigation ul li.active .text {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* الدائرة الخضراء */
+
+.indicator {
+    position: absolute;
+    top: -48px;
+    left: 50px;
+
+    width: 100px;
+    height: 100px;
+
+    background: #00ff33;
+    border: 8px solid #1d1e22;
+
+    border-radius: 50%;
+
+    transition: 0.5s;
+
+    z-index: 1;
+}
+
+/* حركة الدائرة عند اختيار العناصر */
+
+.navigation ul li:nth-child(1).active ~ .indicator {
+    transform: translateX(0);
+}
+
+.navigation ul li:nth-child(2).active ~ .indicator {
+    transform: translateX(120px);
+}
+
+.navigation ul li:nth-child(3).active ~ .indicator {
+    transform: translateX(240px);
+}
+
+.navigation ul li:nth-child(4).active ~ .indicator {
+    transform: translateX(360px);
+}
+
+.navigation ul li:nth-child(5).active ~ .indicator {
+    transform: translateX(480px);
+}
+
+
+/* الهاتف */
+
+@media (max-width: 700px) {
+
+    .navigation {
+        width: 95%;
+        height: 100px;
+    }
+
+    .navigation ul {
+        padding: 0 10px;
+    }
+
+    .navigation ul li {
+        width: 70px;
+    }
+
+    .navigation ul li .icon {
+        font-size: 28px;
+    }
+
+    .navigation ul li .text {
+        top: 63px;
+        font-size: 12px;
+    }
+
+    .indicator {
+        width: 80px;
+        height: 80px;
+        top: -38px;
+        left: calc(10% + 5px);
+    }
+
+    .navigation ul li.active .icon {
+        transform: translateY(-27px);
+    }
+
+    .navigation ul li:nth-child(1).active ~ .indicator {
+        transform: translateX(0);
+    }
+
+    .navigation ul li:nth-child(2).active ~ .indicator {
+        transform: translateX(72px);
+    }
+
+    .navigation ul li:nth-child(3).active ~ .indicator {
+        transform: translateX(144px);
+    }
+
+    .navigation ul li:nth-child(4).active ~ .indicator {
+        transform: translateX(216px);
+    }
+
+    .navigation ul li:nth-child(5).active ~ .indicator {
+        transform: translateX(288px);
+    }
+}
