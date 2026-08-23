@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#174c45">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<title>Ezidi Calendar</title>
+<style>
+:root{
+ --bg:#f8faf9;--surface:#fff;--surface2:#f0f5f3;--text:#172522;--muted:#71817d;--line:#dce6e2;
+ --brand:#174c45;--brand2:#21675d;--accent:#c49a43;--event:#e9f4ef;--today:#e8f2ff;
+ --shadow:0 5px 24px rgba(18,54,47,.08);--radius:18px;--sidebar:250px
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:var(--text);background:var(--bg)}
+button,input,select{font:inherit}button{cursor:pointer}
+body.dark{--bg:#0d1715;--surface:#14211e;--surface2:#1a2b27;--text:#edf5f2;--muted:#a7b8b3;--line:#2b403b;--brand:#78b9a9;--brand2:#4f9384;--event:#203a33;--today:#23384c;--accent:#e2bc67}
+.app{min-height:100vh}
+.topbar{height:72px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:10px 18px;position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:11px;min-width:235px}.logo{width:44px;height:44px;border-radius:14px;background:var(--brand);color:var(--accent);display:grid;place-items:center;font-size:24px}.brand strong{display:block;font-size:17px}.brand span{font-size:11px;color:var(--muted)}
+.menu{display:none}.top-actions{margin-inline-start:auto;display:flex;align-items:center;gap:8px}.pill,.iconbtn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;height:40px;padding:0 12px}.iconbtn{width:40px;padding:0}.todaybtn{border:0;background:var(--brand);color:#fff;border-radius:12px;padding:0 16px;height:40px;font-weight:700}
+.layout{display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);min-height:calc(100vh - 72px)}
+.sidebar{background:var(--surface);border-inline-end:1px solid var(--line);padding:18px 14px;position:sticky;top:72px;height:calc(100vh - 72px);overflow:auto}
+.side-title{font-size:12px;color:var(--muted);padding:10px}.navbtn{width:100%;display:flex;align-items:center;gap:10px;border:0;background:transparent;color:var(--text);padding:12px;border-radius:12px;text-align:start;margin:2px 0}.navbtn.active{background:var(--event);color:var(--brand);font-weight:800}.side-mini{margin-top:22px;padding:12px;background:var(--surface2);border-radius:14px}.side-mini h4{margin:0 0 8px}.side-mini p{font-size:12px;color:var(--muted);line-height:1.6;margin:0}
+.content{min-width:0;padding:18px}
+.content-inner{max-width:1500px;margin:auto}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar h1{font-size:24px;margin:0}.monthnav{display:flex;align-items:center;gap:6px}.monthnav button{width:38px;height:38px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:11px}.monthlabel{min-width:190px;text-align:center;font-weight:800}.viewtabs{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:3px;margin-inline-start:auto}.viewtabs button{border:0;background:transparent;color:var(--muted);padding:7px 10px;border-radius:8px}.viewtabs button.active{background:var(--surface2);color:var(--text);font-weight:800}
+.gridcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-bottom:1px solid var(--line)}.week div{padding:10px 8px;text-align:center;color:var(--muted);font-size:12px;font-weight:800;border-inline-end:1px solid var(--line)}.week div:last-child{border:0}
+.monthgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:minmax(105px,1fr)}.cell{min-width:0;border-inline-end:1px solid var(--line);border-bottom:1px solid var(--line);padding:7px;background:var(--surface);position:relative;overflow:hidden}.cell:nth-child(7n){border-inline-end:0}.cell.muted{opacity:.38}.numrow{display:flex;justify-content:space-between;align-items:center}.num{width:29px;height:29px;display:grid;place-items:center;border-radius:50%;font-size:13px}.cell.today .num{background:var(--brand);color:#fff}.eventline{display:block;width:100%;border:0;background:var(--event);color:var(--text);border-radius:7px;margin-top:5px;padding:4px 6px;text-align:start;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.eventline strong{color:var(--brand)}.more{font-size:10px;color:var(--muted);margin-top:4px}
+.agenda{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}.agenda-list{display:flex;flex-direction:column;gap:10px}.eventcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px}.eventhead{display:flex;gap:12px;align-items:flex-start}.datebox{width:52px;flex:none;text-align:center;border:1px solid var(--line);border-radius:11px;overflow:hidden}.datebox b{display:block;background:var(--brand);color:#fff;padding:4px;font-size:11px}.datebox span{display:block;padding:7px;font-weight:900}.eventcard h3{margin:0 0 4px;font-size:15px}.eventcard p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}.actions{display:flex;gap:7px;margin-top:11px}.small{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:9px;padding:7px 9px;font-size:11px}
+.rightcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;height:max-content;position:sticky;top:92px}.rightcard h3{margin-top:0}.kv{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.kv:last-child{border:0}.search{width:100%;height:40px;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--text);padding:0 11px;margin-bottom:10px}
+.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}.setting{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}.setting:last-child{border:0}.danger{border:0;background:#b64040;color:#fff;border-radius:9px;padding:8px 11px}
+.hidden{display:none!important}
+.mobile-nav{display:none}
+dialog{border:0;border-radius:20px;width:min(600px,92vw);background:var(--surface);color:var(--text);padding:0;box-shadow:0 30px 100px #0005}dialog::backdrop{background:#0008}.modal{padding:22px}.close{float:inline-end;border:0;background:transparent;color:var(--muted);font-size:26px}.modal h2{margin-top:0}.chip{display:inline-block;background:var(--event);color:var(--brand);padding:7px 9px;border-radius:9px;margin:4px;font-size:12px}
+@media(max-width:1100px){
+ :root{--sidebar:210px}.brand{min-width:190px}.topbar{gap:10px}.monthgrid{grid-auto-rows:minmax(92px,1fr)}.agenda{grid-template-columns:1fr}.rightcard{position:static}.settings{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+ .topbar{height:62px;padding:8px 10px}.menu{display:block}.brand{min-width:0}.brand strong{font-size:14px}.brand span{display:none}.logo{width:38px;height:38px}.top-actions .todaybtn{display:none}.layout{display:block;min-height:calc(100vh - 62px)}.sidebar{display:none}.content{padding:10px 8px 80px}.toolbar{margin-bottom:10px}.toolbar h1{font-size:20px}.monthlabel{min-width:145px;font-size:14px}.viewtabs{display:none}.gridcard{border-radius:13px}.week div{font-size:9px;padding:8px 2px}.monthgrid{grid-auto-rows:minmax(70px,1fr)}.cell{padding:4px}.num{width:25px;height:25px;font-size:11px}.eventline{font-size:9px;padding:3px 4px}.eventline:nth-of-type(n+2){display:none}.more{font-size:9px}.mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);bottom:0;left:0;right:0;height:64px;background:var(--surface);border-top:1px solid var(--line);z-index:60;padding-bottom:env(safe-area-inset-bottom)}.mobile-nav button{border:0;background:transparent;color:var(--muted);font-size:11px}.mobile-nav button.active{color:var(--brand);font-weight:800}.agenda{display:block}.rightcard{margin-top:12px}.settings{grid-template-columns:1fr}.search{margin-top:4px}.content-inner{width:100%}
+}
+@media(min-width:761px) and (max-width:1100px){
+ .topbar{height:68px}.sidebar{top:68px;height:calc(100vh - 68px)}.monthgrid{grid-auto-rows:minmax(105px,1fr)}
+}
+@media(min-width:1500px){.monthgrid{grid-auto-rows:minmax(125px,1fr)}}
+</style>
+</head>
+<body>
+<header class="topbar">
+<button class="iconbtn menu" id="menu">☰</button>
+<div class="brand"><div class="logo">☀</div><div><strong id="appname">تقويم إيزيدي</strong><span id="appsub">تقويم إيزيدي وميلادي</span></div></div>
+<div class="top-actions">
+<button class="todaybtn" id="today">اليوم</button>
+<button class="iconbtn" id="theme">◐</button>
+<select class="pill" id="lang"><option value="ar">العربية</option><option value="en">English</option><option value="de">Deutsch</option><option value="ez">Êzîdî</option></select>
+</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="side-title" id="menuTitle">القائمة</div>
+<button class="navbtn active" data-page="calendar">📅 <span id="sideCal">التقويم</span></button>
+<button class="navbtn" data-page="agenda">🗓️ <span id="sideAgenda">المناسبات</span></button>
+<button class="navbtn" data-page="settings">⚙️ <span id="sideSettings">الإعدادات</span></button>
+<button class="navbtn" data-page="about">☀ <span id="sideAbout">حول</span></button>
+<div class="side-mini"><h4 id="nextSmall">المناسبة القادمة</h4><p id="nextSmallText">—</p></div>
+</aside>
+<main class="content"><div class="content-inner">
+<section id="calendarPage">
+<div class="toolbar"><h1 id="monthTitle">—</h1><div class="monthnav"><button id="prev">‹</button><button id="next">›</button><div class="monthlabel" id="monthLabel">—</div></div><div class="viewtabs"><button class="active">شهر</button><button>جدول</button></div></div>
+<div class="gridcard"><div class="week" id="week"></div><div class="monthgrid" id="monthgrid"></div></div>
+</section>
+<section id="agendaPage" class="hidden">
+<div class="toolbar"><h1 id="agendaTitle">المناسبات</h1></div>
+<div class="agenda"><div><input class="search" id="search" placeholder="ابحث عن مناسبة..."><div class="agenda-list" id="agendaList"></div></div><aside class="rightcard"><h3 id="summaryTitle">ملخص</h3><div class="kv"><span id="favLabel">المفضلة</span><b id="favCount">0</b></div><div class="kv"><span id="remLabel">التذكيرات</span><b id="remCount">0</b></div><div class="kv"><span id="yearLabel">السنة</span><b>2026</b></div></aside></div>
+</section>
+<section id="settingsPage" class="hidden"><div class="settings"><div class="card"><h2 id="settingsTitle">الإعدادات</h2><div class="setting"><span id="themeLabel">المظهر</span><button class="small" id="theme2">تبديل</button></div><div class="setting"><span id="installLabel">تثبيت التطبيق</span><button class="small" id="install">تثبيت</button></div><div class="setting"><span id="clearLabel">مسح المفضلة والتذكيرات</span><button class="danger" id="clear">مسح</button></div></div><div class="card"><h2 id="dataTitle">بيانات التقويم</h2><p id="dataText">هذه النسخة مبنية بحيث تستطيع تعديل بيانات 2027 و2028 لاحقًا بإضافة الأحداث إلى مصفوفة البيانات في ملف واحد.</p></div></div></section>
+<section id="aboutPage" class="hidden"><div class="card"><h2 id="aboutTitle">حول التطبيق</h2><p id="aboutText"></p><p id="sourceText"></p><b>Ezidi Calendar Universal V5</b></div></section>
+</div></main>
+</div>
+<nav class="mobile-nav"><button class="active" data-page="calendar">📅<br><span id="mCal">التقويم</span></button><button data-page="agenda">🗓️<br><span id="mAgenda">المناسبات</span></button><button data-page="settings">⚙️<br><span id="mSettings">الإعدادات</span></button><button data-page="about">☀<br><span id="mAbout">حول</span></button></nav>
+<dialog id="modal"><div class="modal"><button class="close" id="close">×</button><div id="modalBody"></div></div></dialog>
+<script>
+const EVENTS=[
+["2026-01-02","2026-01-02","ÎDA BÊLÎNDA"],
+["2026-02-02","2026-02-02","ÎDA ÇÎLE ZÎVÎSTANÊ"],
+["2026-02-19","2026-02-20","ÎDA XÊDR ALÎAS Û XÊDR NABÎ"],
+["2026-03-03","2026-03-04","ŠÊV BARAT"],
+["2026-03-18","2026-03-18","ÎDA KOLÛJ LÎ GORGÎYA Û RÛSÎYA Û ÊRMÎNYA"],
+["2026-04-15","2026-04-15","ÎDA ÇARŠEMA SARÊ SALÊ"],
+["2026-04-17","2026-04-17","DÊSTPÊKA TAWAFAWLAT ŠÊX"],
+["2026-05-25","2026-05-26","ÎDA ŠÊŠÎMS (HJIYA)"],
+["2026-06-14","2026-06-14","TAWAFA SLTAN ÊZÎ LÊ JORJÎA"],
+["2026-06-18","2026-06-18","ROŠA SARDANA TRBA LÎ GORGÎYA/RÛSÎYA/ÊRMÎNYA"],
+["2026-08-02","2026-08-02","ÎDA ÇÎLE HAVÎNÊ"],
+["2014-08-03","2014-08-03","ROŠA CÎNOSAÎDA ÊZÎDÎA"],
+["2007-08-14","2007-08-14","CÎNOSAÎDA GÊR ÎZÊR Û SÎBA ŠÊX XÊDRÊ"],
+["2014-08-15","2014-08-15","CÎNOSAÎDA GÛNDÊ KOJO"],
+["2026-10-06","2026-10-13","CMAÎA ŠÎXADÎ"],
+["2026-12-18","2026-12-18","ÎDA ROŠÊN ÊZÎ"],
+["2026-12-27","2027-01-03","BATZMÎA PÎRÊ ALÎ"]
+];
+const N={
+"ÎDA BÊLÎNDA":{ar:"عيد بيليندا",en:"Îda Bêlînda",de:"Îda Bêlînda",ez:"Îda Bêlînda"},
+"ÎDA ÇÎLE ZÎVÎSTANÊ":{ar:"عيد أربعينية الشتاء",en:"Îda Çîle Zîvîstanê",de:"Îda Çîle Zîvîstanê",ez:"Îda Çîle Zîvîstanê"},
+"ÎDA XÊDR ALÎAS Û XÊDR NABÎ":{ar:"عيد خضر إلياس وخضر نبي",en:"Îda Xêdr Alîas û Xêdr Nabî",de:"Îda Xêdr Alîas û Xêdr Nabî",ez:"Îda Xêdr Alîas û Xêdr Nabî"},
+"ŠÊV BARAT":{ar:"ليلة البرات",en:"Šêv Barat",de:"Šêv Barat",ez:"Šêv Barat"},
+"ÎDA KOLÛJ LÎ GORGÎYA Û RÛSÎYA Û ÊRMÎNYA":{ar:"عيد كولوج في جورجيا وروسيا وأرمينيا",en:"Îda Kolûj in Georgia, Russia and Armenia",de:"Îda Kolûj in Georgien, Russland und Armenien",ez:"Îda Kolûj li Gorgîya, Rûsîya û Êrmînya"},
+"ÎDA ÇARŠEMA SARÊ SALÊ":{ar:"عيد الأربعاء الأول من السنة",en:"Îda Çaršema Sarê Salê",de:"Îda Çaršema Sarê Salê",ez:"Îda Çaršema Sarê Salê"},
+"DÊSTPÊKA TAWAFAWLAT ŠÊX":{ar:"بداية طواف وطن الشيخ",en:"Dêstpêka Tawafawlat Šêx",de:"Beginn der Tawafawlat Šêx",ez:"Dêstpêka Tawafawlat Šêx"},
+"ÎDA ŠÊŠÎMS (HJIYA)":{ar:"عيد شمس (الحجية)",en:"Îda Šêšîms (Hjiya)",de:"Îda Šêšîms (Hjiya)",ez:"Îda Šêšîms (Hjiya)"},
+"TAWAFA SLTAN ÊZÎ LÊ JORJÎA":{ar:"طواف سلطان إيزي في جورجيا",en:"Tawafa Sltan Êzî in Georgia",de:"Tawafa Sltan Êzî in Georgien",ez:"Tawafa Sltan Êzî li Jorjîa"},
+"ROŠA SARDANA TRBA LÎ GORGÎYA/RÛSÎYA/ÊRMÎNYA":{ar:"روش زيارة التربة في جورجيا وروسيا وأرمينيا",en:"Roša Sardana Trba in Georgia/Russia/Armenia",de:"Roša Sardana Trba in Georgien/Russland/Armenien",ez:"Roša Sardana Trba li Gorgîya/Rûsîya/Êrmînya"},
+"ÎDA ÇÎLE HAVÎNÊ":{ar:"عيد أربعينية الصيف",en:"Îda Çîle Havînê",de:"Îda Çîle Havînê",ez:"Îda Çîle Havînê"},
+"ROŠA CÎNOSAÎDA ÊZÎDÎA":{ar:"ذكرى الإبادة الإيزيدية — 03.08.2014",en:"Ezidi Genocide Commemoration — 03.08.2014",de:"Gedenken an den êzîdischen Genozid — 03.08.2014",ez:"Roša Cînosaîda Êzîdîa — 03.08.2014"},
+"CÎNOSAÎDA GÊR ÎZÊR Û SÎBA ŠÊX XÊDRÊ":{ar:"ذكرى الإبادة: گير عيزر وصيبا شيخ خدر — 14.08.2007",en:"Commemoration: Gêr Îzêr and Sîba Šêx Xêdrê — 14.08.2007",de:"Gedenken: Gêr Îzêr und Sîba Šêx Xêdrê — 14.08.2007",ez:"Cînosaîda Gêr Îzêr û Sîba Šêx Xêdrê — 14.08.2007"},
+"CÎNOSAÎDA GÛNDÊ KOJO":{ar:"ذكرى إبادة قرية كوجو — 15.08.2014",en:"Commemoration of the Kojo massacre — 15.08.2014",de:"Gedenken an die Cînosaîda Gûndê Kojo — 15.08.2014",ez:"Cînosaîda Gûndê Kojo — 15.08.2014"},
+"CMAÎA ŠÎXADÎ":{ar:"جماعة الشيخ عدي",en:"Cmaîa Šîxadî",de:"Cmaîa Šîxadî",ez:"Cmaîa Šîxadî"},
+"ÎDA ROŠÊN ÊZÎ":{ar:"عيد روشين إيزي",en:"Îda Roşên Êzî",de:"Îda Roşên Êzî",ez:"Îda Roşên Êzî"},
+"BATZMÎA PÎRÊ ALÎ":{ar:"باتزمي بير علي",en:"Batzmîa Pîrê Alî",de:"Batzmîa Pîrê Alî",ez:"Batzmîa Pîrê Alî"}
+};
+const TXT={
+ar:{app:"تقويم إيزيدي",sub:"تقويم إيزيدي وميلادي",today:"اليوم",calendar:"التقويم",agenda:"المناسبات",settings:"الإعدادات",about:"حول",menu:"القائمة",next:"المناسبة القادمة",summary:"ملخص",fav:"المفضلة",rem:"التذكيرات",year:"السنة",search:"ابحث عن مناسبة...",theme:"المظهر",install:"تثبيت التطبيق",clear:"مسح المفضلة والتذكيرات",data:"بيانات التقويم",dataText:"يمكنك لاحقًا إضافة 2027 و2028 في قائمة الأحداث نفسها دون تغيير تصميم التطبيق.",aboutText:"نسخة موحدة ومتجاوبة من تقويم إيزيدي، مصممة لتعمل على الهاتف والآيباد والكمبيوتر. بيانات مناسبات 2026 مأخوذة من ملف Ezidische Kalender 2026 المرفق.",source:"المصدر: Ezidische Kalender 2026.",months:["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"],week:["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"],none:"لا توجد مناسبة مسجلة.",day:"يوم",days:"أيام"},
+en:{app:"Ezidi Calendar",sub:"Ezidi & Gregorian Calendar",today:"Today",calendar:"Calendar",agenda:"Events",settings:"Settings",about:"About",menu:"Menu",next:"Next occasion",summary:"Summary",fav:"Favorites",rem:"Reminders",year:"Year",search:"Search events...",theme:"Appearance",install:"Install app",clear:"Clear favorites & reminders",data:"Calendar data",dataText:"You can later add 2027 and 2028 to the same event list without changing the responsive design.",aboutText:"A single responsive Ezidi Calendar designed for phone, iPad and computer. 2026 event data comes from the attached Ezidische Kalender 2026 file.",source:"Source: Ezidische Kalender 2026.",months:["January","February","March","April","May","June","July","August","September","October","November","December"],week:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],none:"No occasion recorded.",day:"day",days:"days"},
+de:{app:"Êzîdî-Kalender",sub:"Êzîdî- & Gregorianischer Kalender",today:"Heute",calendar:"Kalender",agenda:"Termine",settings:"Einstellungen",about:"Über",menu:"Menü",next:"Nächster Termin",summary:"Zusammenfassung",fav:"Favoriten",rem:"Erinnerungen",year:"Jahr",search:"Termine suchen...",theme:"Darstellung",install:"App installieren",clear:"Favoriten & Erinnerungen löschen",data:"Kalenderdaten",dataText:"2027 und 2028 können später in derselben Ereignisliste ergänzt werden, ohne das responsive Design zu ändern.",aboutText:"Ein einheitlicher responsiver Êzîdî-Kalender für Smartphone, iPad und Computer. Die Termindaten 2026 stammen aus der beigefügten Datei Ezidische Kalender 2026.",source:"Quelle: Ezidische Kalender 2026.",months:["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],week:["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"],none:"Kein Termin eingetragen.",day:"Tag",days:"Tage"},
+ez:{app:"Takvimê Êzîdî",sub:"Takvimê Êzîdî û Miladî",today:"Îro",calendar:"Takvim",agenda:"Rojên taybet",settings:"Sazkirin",about:"Derbar",menu:"Menu",next:"Roya taybet a bê",summary:"Kurte",fav:"Hev",rem:"Bîranîn",year:"Sal",search:"Li rojekê bigere...",theme:"Dîmen",install:"Sepanê saz bike",clear:"Hev û bîranînan rake",data:"Daneyên takvimê",dataText:"Paşê dikarî 2027 û 2028 li heman lîsteya rojan zêde bikî, bêyî ku sêwirana responsive biguhere.",aboutText:"Takvimê Êzîdî yê yekgirtî û responsive ji bo telefon, iPad û komputer. Daneyên 2026 ji dosyaya Ezidische Kalender 2026 hatine girtin.",source:"Çavkanî: Ezidische Kalender 2026.",months:["Çile","Şbat","Adar","Nîsan","Gûlan","Xêzîran","Tîrmeh","Tebax","Îlon","Cotmeh","Mijdar","Kanûn"],week:["Yekşem","Duşem","Sêşem","Çarşem","Pêncşem","Înî","Şemî"],none:"Tu rojek taybet nehatiye qeyd kirin.",day:"roj",days:"roj"}
+};
+let lang=localStorage.getItem("ez-lang")||"ar", dark=localStorage.getItem("ez-dark")==="1";
+let favorites=JSON.parse(localStorage.getItem("ez-fav")||"[]"), reminders=JSON.parse(localStorage.getItem("ez-rem")||"[]");
+let cursor=new Date(2026,7,1); const today=new Date();
+
+function iso(d){return d.toISOString().slice(0,10)} function parse(s){let [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+function label(key){return N[key]?.[lang]||key}
+function formatDate(d){return new Intl.DateTimeFormat(lang==="ar"?"ar":lang==="de"?"de-DE":"en-US",{day:"numeric",month:"long",year:"numeric"}).format(d)}
+function eventsOn(d){let x=iso(d);return EVENTS.filter(e=>x>=e[0]&&x<=e[1])}
+function save(){localStorage.setItem("ez-fav",JSON.stringify(favorites));localStorage.setItem("ez-rem",JSON.stringify(reminders))}
+function applyText(){
+ let t=TXT[lang];document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+ const map={appname:t.app,appsub:t.sub,today:t.today,sideCal:t.calendar,mCal:t.calendar,sideAgenda:t.agenda,mAgenda:t.agenda,sideSettings:t.settings,mSettings:t.settings,sideAbout:t.about,mAbout:t.about,menuTitle:t.menu,nextSmall:t.next,summaryTitle:t.summary,favLabel:t.fav,remLabel:t.rem,yearLabel:t.year,themeLabel:t.theme,installLabel:t.install,clearLabel:t.clear,dataTitle:t.data, dataText:t.dataText,aboutTitle:t.about,aboutText:t.aboutText,sourceText:t.source,agendaTitle:t.agenda};
+ Object.entries(map).forEach(([id,v])=>{let x=document.getElementById(id);if(x)x.textContent=v});document.getElementById("search").placeholder=t.search;render();renderAgenda();updateNext();
+}
+function render(){
+ let t=TXT[lang], y=cursor.getFullYear(),m=cursor.getMonth();document.getElementById("monthTitle").textContent=t.months[m]+" "+y;document.getElementById("monthLabel").textContent=t.months[m]+" "+y;
+ let w=document.getElementById("week");w.innerHTML=t.week.map(x=>"<div>"+x+"</div>").join("");
+ let g=document.getElementById("monthgrid");g.innerHTML="";
+ let first=new Date(y,m,1), start=first.getDay(), last=new Date(y,m+1,0).getDate(), prevLast=new Date(y,m,0).getDate();
+ for(let i=0;i<42;i++){
+   let day=i-start+1,d=new Date(y,m,day),muted=day<1||day>last;
+   if(day<1)d=new Date(y,m-1,prevLast+day); if(day>last)d=new Date(y,m+1,day-last);
+   let ev=eventsOn(d),c=document.createElement("div");c.className="cell"+(muted?" muted":"")+(iso(d)===iso(today)?" today":"");
+   let html='<div class="numrow"><span class="num">'+d.getDate()+'</span></div>';
+   ev.slice(0,3).forEach(e=>html+='<button class="eventline" data-start="'+e[0]+'"><strong>•</strong> '+label(e[2])+'</button>');
+   if(ev.length>3)html+='<div class="more">+'+(ev.length-3)+' more</div>';
+   c.innerHTML=html;c.querySelectorAll(".eventline").forEach(b=>b.onclick=()=>openEvent(parse(b.dataset.start)));c.onclick=e=>{if(e.target.tagName!=="BUTTON")openDay(d)};g.appendChild(c)
+ }
+}
+function openDay(d){let ev=eventsOn(d),body="<h2>"+formatDate(d)+"</h2>"+(ev.length?ev.map(e=>'<div class="chip">'+label(e[2])+"</div>").join(""):"<p>"+TXT[lang].none+"</p>");document.getElementById("modalBody").innerHTML=body;document.getElementById("modal").showModal()}
+function openEvent(d){let ev=eventsOn(d)[0]||EVENTS.find(e=>e[0]===iso(d));if(!ev)return;let body="<h2>"+label(ev[2])+"</h2><p>"+formatDate(parse(ev[0]))+(ev[0]!==ev[1]?" — "+formatDate(parse(ev[1])):"")+"</p><div class='actions'><button class='small' id='mf'>"+(favorites.includes(ev[2])?"★":"☆")+" "+TXT[lang].fav+"</button><button class='small' id='mr'>"+(reminders.includes(ev[2])?"🔔":"🔕")+" "+TXT[lang].rem+"</button></div>";document.getElementById("modalBody").innerHTML=body;document.getElementById("modal").showModal();document.getElementById("mf").onclick=()=>toggleFav(ev[2]);document.getElementById("mr").onclick=()=>toggleRem(ev[2])}
+function renderAgenda(){let q=document.getElementById("search").value.toLowerCase().trim(),box=document.getElementById("agendaList");box.innerHTML="";EVENTS.filter(e=>label(e[2]).toLowerCase().includes(q)).sort((a,b)=>a[0].localeCompare(b[0])).forEach(e=>{let c=document.createElement("article");c.className="eventcard";let d=parse(e[0]);c.innerHTML='<div class="eventhead"><div class="datebox"><b>'+d.toLocaleString("en",{month:"short"})+'</b><span>'+d.getDate()+'</span></div><div><h3>'+label(e[2])+'</h3><p>'+formatDate(parse(e[0]))+(e[0]!==e[1]?" — "+formatDate(parse(e[1])):"")+'</p></div></div><div class="actions"><button class="small f">'+(favorites.includes(e[2])?"★":"☆")+" "+TXT[lang].fav+'</button><button class="small r">'+(reminders.includes(e[2])?"🔔":"🔕")+" "+TXT[lang].rem+"</button></div>";c.querySelector(".f").onclick=()=>toggleFav(e[2]);c.querySelector(".r").onclick=()=>toggleRem(e[2]);box.appendChild(c)});document.getElementById("favCount").textContent=favorites.length;document.getElementById("remCount").textContent=reminders.length}
+function toggleFav(k){favorites=favorites.includes(k)?favorites.filter(x=>x!==k):[...favorites,k];save();renderAgenda();document.getElementById("modal").close()}
+function toggleRem(k){reminders=reminders.includes(k)?reminders.filter(x=>x!==k):[...reminders,k];save();renderAgenda();document.getElementById("modal").close()}
+function updateNext(){let todayIso=iso(today),next=EVENTS.filter(e=>e[0]>=todayIso).sort((a,b)=>a[0].localeCompare(b[0]))[0];if(!next){document.getElementById("nextSmallText").textContent="—";return}let d=parse(next[0]),days=Math.max(0,Math.ceil((d-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/86400000));document.getElementById("nextSmallText").textContent=label(next[2])+" — "+formatDate(d)+" ("+days+" "+(days===1?TXT[lang].day:TXT[lang].days)+")"}
+function page(name){["calendar","agenda","settings","about"].forEach(x=>document.getElementById(x+"Page").classList.toggle("hidden",x!==name));document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===name))}
+document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>page(b.dataset.page));
+document.getElementById("prev").onclick=()=>{cursor.setMonth(cursor.getMonth()-1);render()};document.getElementById("next").onclick=()=>{cursor.setMonth(cursor.getMonth()+1);render()};
+document.getElementById("today").onclick=()=>{cursor=new Date(today.getFullYear(),today.getMonth(),1);render();page("calendar")};
+document.getElementById("lang").value=lang;document.getElementById("lang").onchange=e=>{lang=e.target.value;localStorage.setItem("ez-lang",lang);applyText()};
+function toggleTheme(){dark=!dark;document.body.classList.toggle("dark",dark);localStorage.setItem("ez-dark",dark?"1":"0")}
+document.getElementById("theme").onclick=toggleTheme;document.getElementById("theme2").onclick=toggleTheme;
+document.getElementById("clear").onclick=()=>{favorites=[];reminders=[];save();renderAgenda()};
+document.getElementById("search").oninput=renderAgenda;document.getElementById("close").onclick=()=>document.getElementById("modal").close();
+let deferred;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e});document.getElementById("install").onclick=()=>{if(deferred){deferred.prompt();deferred=null}else alert("من قائمة المتصفح اختر تثبيت التطبيق / Add to Home Screen.")};
+document.getElementById("menu").onclick=()=>document.querySelector(".sidebar").style.display=document.querySelector(".sidebar").style.display==="block"?"none":"block";
+document.body.classList.toggle("dark",dark);applyText();if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
