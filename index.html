@@ -1,72 +1,101 @@
-Enter<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magic Navigation</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#173b57">
+  <meta name="description" content="Ezidi Calendar - تقويم إيزيدي متعدد اللغات">
+  <title>تقويم إيزيدي</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-    <div class="navigation">
-        <ul>
-
-            <li class="active">
-                <a href="#">
-                    <span class="icon">⌂</span>
-                    <span class="text">Home</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <span class="icon">♙</span>
-                    <span class="text">Profile</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <span class="icon">◯</span>
-                    <span class="text">Chat</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <span class="icon">▣</span>
-                    <span class="text">Camera</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <span class="icon">⚙</span>
-                    <span class="text">Settings</span>
-                </a>
-            </li>
-
-            <div class="indicator"></div>
-
-        </ul>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">☀</div>
+      <div>
+        <h1 id="appTitle">تقويم إيزيدي</h1>
+        <p id="appSubtitle">التقويم الإيزيدي والميلادي</p>
+      </div>
     </div>
+    <div class="actions">
+      <select id="languageSelect" aria-label="Language">
+        <option value="ar">العربية</option>
+        <option value="en">English</option>
+        <option value="de">Deutsch</option>
+        <option value="ez">Êzîdî</option>
+      </select>
+      <button id="themeBtn" class="icon-btn" title="Dark mode">◐</button>
+    </div>
+  </header>
 
-    <script>
-        const list = document.querySelectorAll(".navigation li");
+  <main>
+    <section class="hero">
+      <div>
+        <span class="eyebrow" id="todayLabel">اليوم</span>
+        <h2 id="todayDate">—</h2>
+        <p id="todayEvent">—</p>
+      </div>
+      <button id="todayBtn" class="primary">اليوم</button>
+    </section>
 
-        function activeLink() {
-            list.forEach(item => {
-                item.classList.remove("active");
-            });
+    <nav class="tabs">
+      <button class="tab active" data-view="calendar" id="tabCalendar">التقويم</button>
+      <button class="tab" data-view="events" id="tabEvents">المناسبات</button>
+      <button class="tab" data-view="about" id="tabAbout">حول التقويم</button>
+    </nav>
 
-            this.classList.add("active");
-        }
+    <section id="calendarView" class="view">
+      <div class="calendar-head">
+        <button id="prevMonth" class="nav-btn">‹</button>
+        <div class="month-title">
+          <h2 id="monthName">—</h2>
+          <span id="yearNumber">2026</span>
+        </div>
+        <button id="nextMonth" class="nav-btn">›</button>
+      </div>
+      <div class="calendar-card">
+        <div id="weekdays" class="weekdays"></div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+      </div>
+      <div id="selectedDay" class="selected-day"></div>
+    </section>
 
-        list.forEach(item => {
-            item.addEventListener("click", activeLink);
-        });
-    </script>
+    <section id="eventsView" class="view hidden">
+      <div class="section-title">
+        <div>
+          <span class="eyebrow" id="eventsEyebrow">2026</span>
+          <h2 id="eventsTitle">المناسبات الإيزيدية</h2>
+        </div>
+        <input id="eventSearch" type="search" placeholder="ابحث..." aria-label="Search events">
+      </div>
+      <div id="eventList" class="event-list"></div>
+    </section>
 
+    <section id="aboutView" class="view hidden">
+      <div class="about-card">
+        <h2 id="aboutTitle">حول التقويم</h2>
+        <p id="aboutText"></p>
+        <div class="source-box">
+          <strong id="sourceTitle">مصدر بيانات النسخة الأولى</strong>
+          <p id="sourceText">Ezidische Kalender 2026 — الملف المرفق بالمشروع.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="dayDialog">
+    <div class="dialog-content">
+      <button class="close" id="closeDialog">×</button>
+      <div id="dialogBody"></div>
+    </div>
+  </dialog>
+
+  <footer>
+    <span>☀</span> <span id="footerText">Ezidi Calendar</span>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
