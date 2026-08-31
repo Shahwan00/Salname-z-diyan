@@ -1,4 +1,4 @@
-const CACHE = "ezidi-calendar-v6";
+const CACHE = "ezidi-calendar-v7";
 const ASSETS = [
   "./",
   "./index.html",
